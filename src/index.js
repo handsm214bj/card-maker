@@ -7,6 +7,7 @@ import ImageUploader from './service/image_uploader';
 import ImageFileInput from './component/image_file_input/image_file_input';
 
 const authService = new AuthService();
+const CardRepository = new CardRepository();
 const imageUploader= new ImageUploader();
 const FileInput = props => (
   <ImageFileInput {...props} imageUploader={imageUploader} />
@@ -14,7 +15,11 @@ const FileInput = props => (
 
 ReactDOM.render(
   <React.StrictMode>
-    <App authService={authService} FileInput={FileInput} />
+    <App 
+    authService={authService} 
+    FileInput={FileInput} 
+    CardRepository={CardRepository} 
+    />
   </React.StrictMode>,
   document.getElementById('root')
 );

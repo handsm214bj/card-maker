@@ -1,3 +1,5 @@
+import firebase from 'firebase';
+
 class ImageUploader {
    async upload(file) {
     const data = new FormData();
