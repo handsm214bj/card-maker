@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Footer from '../footer/footer';
 import Header from '../header/header';
@@ -6,37 +6,35 @@ import Editor from '../editor/editor';
 import Preview from '../preview/preview';
 import styles from './maker.module.css';
 
-const Maker = ({ FileInput, authService, CardRepository }) => {
+const Maker = ({ FileInput, authService, cardRepository }) => {
   const historyState = useHistory().state;
   const [cards, setCards] = useState({}); 
   const [userId, setUserId] = useState(historyState && historyState.id);
   
   const history = useHistory();
-  const onLogout = () => {
+  const onLogout = useCallback(() => {
     authService.logout();
-  };
+  }, [authService]);
 
 useEffect(() => {
   if (!userId) {
     return;
   }
-  const stopSync = CardRepository.syncCards(userId, cards => {
+  const stopSync = cardRepository.syncCards(userId, cards => {
     setCards(cards);
   });
   return () => stopSync();
-}, [userId]);
-
+}, [userId, cardRepository]);
 
 useEffect(() => {
   authService.onAuthChange(user => {
     if (user) {
       setUserId(user.uid);
-      console.log(userId);
     } else {
       history.push('/');
     }
   });
-});
+}, [authService, userId, history]);
 
   const createOrUpdateCard = card => {
     setCards(cards => {
@@ -44,7 +42,7 @@ useEffect(() => {
       updated[card.id] = card;
       return updated;
     });
-    CardRepository.saveCard(userId, card);    
+    cardRepository.saveCard(userId, card);    
   };
 
   const deleteCard = card => {
@@ -53,7 +51,7 @@ useEffect(() => {
       delete updated[card.id];
       return updated;
     }); 
-    CardRepository.removeCard(userId, card);   
+    cardRepository.removeCard(userId, card);   
   };
 
   return (
